@@ -12,44 +12,57 @@ public class TicTacToeConsole {
     public static final char OPEN_SPOT = ' ';
 
 
-    private Random mRand;
+    private Random mRand = new Random();
+
+    char turn = HUMAN_PLAYER;    // Human starts first
+    int win = 0;                // Set to 1, 2, or 3 when game is over
 
     public TicTacToeConsole() {
 
-        // Seed the random number generator
-        mRand = new Random();
+    }
 
-        char turn = HUMAN_PLAYER;    // Human starts first
-        int win = 0;                // Set to 1, 2, or 3 when game is over
-
-        // Keep looping until someone wins or a tie
-        while (win == 0) {
-            displayBoard();
-
-            if (turn == HUMAN_PLAYER) {
-                //////////////////////////////////////////////////////////////////////////////////////////////getUserMove();
-                turn = COMPUTER_PLAYER;
-            } else {
-                getComputerMove();
-                turn = HUMAN_PLAYER;
-            }
-
-            win = checkForWinner();
-        }
-
+    public int TicTacToeConsoleV2(int position) {
+        win = checkForWinner();
+        position--;
         displayBoard();
+        mBoard[position] = HUMAN_PLAYER;
+        turn = COMPUTER_PLAYER;
+        if(reportWinner()>9){
+            win = checkForWinner();
+            return reportWinner();
+        }else{
+            int move = getComputerMove();
+            turn = HUMAN_PLAYER;
+            win = checkForWinner();
+            displayBoard();
+            reportWinner();
+            return move+1;
+        }
+    }
 
+    public int reportWinner() {
         // Report the winner
         System.out.println();
-        if (win == 1)
+        if (win == 1){
             System.out.println("It's a tie.");
-        else if (win == 2)
+            return 10;
+        }else if (win == 2){
             System.out.println(HUMAN_PLAYER + " wins!");
-        else if (win == 3)
+            return 11;
+        }else if (win == 3){
             System.out.println(COMPUTER_PLAYER + " wins!");
-        else
-            System.out.println("There is a logic problem!");
+            return 12;
+        }else{
+            return 0;
+        }
     }
+
+    public void reset() {
+        mBoard = new char[]{'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        mRand = new Random();
+        win = 0;
+    }
+
 
     private void displayBoard() {
         System.out.println();
@@ -119,7 +132,7 @@ public class TicTacToeConsole {
         return 1;
     }
 
-    private void getComputerMove() {
+    private int getComputerMove() {
         int move;
 
         // First see if there's a move O can make to win
@@ -129,7 +142,7 @@ public class TicTacToeConsole {
                 mBoard[i] = COMPUTER_PLAYER;
                 if (checkForWinner() == 3) {
                     System.out.println("Computer is moving to " + (i + 1));
-                    return;
+                    return i;
                 } else
                     mBoard[i] = curr;
             }
@@ -143,7 +156,7 @@ public class TicTacToeConsole {
                 if (checkForWinner() == 2) {
                     mBoard[i] = COMPUTER_PLAYER;
                     System.out.println("Computer is moving to " + (i + 1));
-                    return;
+                    return i;
                 } else
                     mBoard[i] = curr;
             }
@@ -157,5 +170,6 @@ public class TicTacToeConsole {
         System.out.println("Computer is moving to " + (move + 1));
 
         mBoard[move] = COMPUTER_PLAYER;
+        return move;
     }
 }
