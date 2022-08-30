@@ -27,6 +27,7 @@ public class TicTacToeConsole {
         displayBoard();
         mBoard[position] = HUMAN_PLAYER;
         turn = COMPUTER_PLAYER;
+        win = checkForWinner();
         if(reportWinner()>9){
             win = checkForWinner();
             return reportWinner();
@@ -38,6 +39,10 @@ public class TicTacToeConsole {
             reportWinner();
             return move+1;
         }
+    }
+
+    public char[] checkBoard() {
+        return mBoard;
     }
 
     public int reportWinner() {

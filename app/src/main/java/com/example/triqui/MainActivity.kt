@@ -8,8 +8,10 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.flatdialoglibrary.dialog.FlatDialog
 import com.example.triqui.utils.TicTacToeConsole
 import com.example.triqui.viewmodels.MainViewModel
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private val nineImage by lazy<ImageView> { findViewById(R.id.image_nine) }
 
     private val reset by lazy<Button> { findViewById(R.id.reset) }
+    private val exit by lazy<Button> { findViewById(R.id.exit) }
+    private val difficulty by lazy<Button> { findViewById(R.id.difficulty) }
 
 
     lateinit var animationScale: Animation
@@ -44,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     var turn = false
 
     var result: String? = null
+
+    var difficultyState: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,20 +101,62 @@ class MainActivity : AppCompatActivity() {
             executeOperation(9)
         }
         reset.setOnClickListener {
+            it.startAnimation(animationScale)
             Toast.makeText(this, "Reset", Toast.LENGTH_SHORT).show()
             ticTacToeConsole.reset()
             clear()
         }
+        exit.setOnClickListener {
+            it.startAnimation(animationScale)
+            onBackPressed()
+        }
+        difficulty.setOnClickListener {
+            it.startAnimation(animationScale)
+            dialogMenu()
+        }
+    }
+
+    private fun dialogMenu() {
+        val flatDialog = FlatDialog(this@MainActivity)
+        flatDialog.setTitle("Dificultad")
+            .setSubtitle("Seleccione su nivel de dificultad")
+            .setFirstButtonText("EASY")
+            .setSecondButtonText("MEDIUM")
+            .setThirdButtonText("HARD")
+            .isCancelable(true)
+            .withFirstButtonListner {
+                Toast.makeText(this, "EASY", Toast.LENGTH_SHORT).show()
+                ticTacToeConsole.reset()
+                clear()
+                flatDialog.dismiss()
+            }
+            .withSecondButtonListner {
+                Toast.makeText(this, "MEDIUM", Toast.LENGTH_SHORT).show()
+                ticTacToeConsole.reset()
+                clear()
+                flatDialog.dismiss()
+            }
+            .withThirdButtonListner {
+                Toast.makeText(this, "HARD", Toast.LENGTH_SHORT).show()
+                ticTacToeConsole.reset()
+                clear()
+                flatDialog.dismiss()
+            }
+            .show()
     }
 
     private fun executeOperation(position: Int) {
         if (ticTacToeConsole.reportWinner() > 9) {
             checkFinish()
         } else {
-            paintV2(position)
-            val move = ticTacToeConsole.TicTacToeConsoleV2(position)
-            paintV2(move)
-            checkFinish()
+            if (!checkBoard(position)) {
+                paintV2(position)
+                val move = ticTacToeConsole.TicTacToeConsoleV2(position)
+                paintV2(move)
+                checkFinish()
+            } else {
+                Toast.makeText(this, "Illegal Move", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -119,8 +167,13 @@ class MainActivity : AppCompatActivity() {
             12 -> result = "Computer Player Wins!!!!"
         }
         if (!result.isNullOrEmpty()) {
-            Toast.makeText(this, result.toString(), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, result.toString(), Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun checkBoard(position: Int): Boolean {
+        val board = ticTacToeConsole.checkBoard()
+        return board[position - 1] == 'X' || board[position - 1] == 'O'
     }
 
     private fun clear() {

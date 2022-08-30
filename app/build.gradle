@@ -70,4 +70,6 @@ dependencies {
     //Epoxy
     implementation "com.airbnb.android:epoxy:4.6.3"
     kapt "com.airbnb.android:epoxy-processor:4.6.3"
+
+    implementation 'com.github.mejdi14:Flat-Dialog-Android:1.0.5'
 }
