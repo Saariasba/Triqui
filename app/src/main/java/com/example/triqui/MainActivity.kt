@@ -1,5 +1,6 @@
 package com.example.triqui
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -51,6 +52,9 @@ class MainActivity : AppCompatActivity() {
 
     var difficultyState: String? = null
 
+    lateinit var mpClick: MediaPlayer
+    lateinit var mpInitio: MediaPlayer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -61,57 +65,71 @@ class MainActivity : AppCompatActivity() {
     private fun init() {
         animationScale = AnimationUtils.loadAnimation(this, R.anim.button_choice_small)
         viewModel = MainViewModel()
+        mpInitio = MediaPlayer.create(this, R.raw.inicio)
+        mpClick = MediaPlayer.create(this, R.raw.clic)
     }
 
     private fun setListeners(animationScale: Animation) {
         one.setOnClickListener {
             it.startAnimation(animationScale)
+            mpClick.start()
             executeOperation(1)
         }
         two.setOnClickListener {
             it.startAnimation(animationScale)
+            mpClick.start()
             executeOperation(2)
         }
         three.setOnClickListener {
             it.startAnimation(animationScale)
+            mpClick.start()
             executeOperation(3)
         }
         four.setOnClickListener {
             it.startAnimation(animationScale)
+            mpClick.start()
             executeOperation(4)
         }
         five.setOnClickListener {
             it.startAnimation(animationScale)
+            mpClick.start()
             executeOperation(5)
         }
         six.setOnClickListener {
             it.startAnimation(animationScale)
+            mpClick.start()
             executeOperation(6)
         }
         seven.setOnClickListener {
             it.startAnimation(animationScale)
+            mpClick.start()
             executeOperation(7)
         }
         eight.setOnClickListener {
             it.startAnimation(animationScale)
+            mpClick.start()
             executeOperation(8)
         }
         nine.setOnClickListener {
             it.startAnimation(animationScale)
+            mpClick.start()
             executeOperation(9)
         }
         reset.setOnClickListener {
             it.startAnimation(animationScale)
+            mpInitio.start()
             Toast.makeText(this, "Reset", Toast.LENGTH_SHORT).show()
             ticTacToeConsole.reset()
             clear()
         }
         exit.setOnClickListener {
             it.startAnimation(animationScale)
+            mpInitio.start()
             onBackPressed()
         }
         difficulty.setOnClickListener {
             it.startAnimation(animationScale)
+            mpInitio.start()
             dialogMenu()
         }
     }
