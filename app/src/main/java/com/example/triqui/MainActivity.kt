@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private val eightImage by lazy<ImageView> { findViewById(R.id.image_eight) }
     private val nineImage by lazy<ImageView> { findViewById(R.id.image_nine) }
 
+    private val container by lazy<ConstraintLayout> { findViewById(R.id.container) }
+
     private val reset by lazy<Button> { findViewById(R.id.reset) }
     private val exit by lazy<Button> { findViewById(R.id.exit) }
     private val difficulty by lazy<Button> { findViewById(R.id.difficulty) }
@@ -60,6 +62,28 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         init()
         setListeners(animationScale)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putCharArray("ticTacToeConsole", ticTacToeConsole.getBoard())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val ticTacToe = savedInstanceState.getCharArray("ticTacToeConsole")
+        ticTacToeConsole.setBoard(ticTacToe)
+        loadState(ticTacToe)
+
+    }
+
+    private fun loadState(ticTacToe: CharArray?) {
+        ticTacToe?.forEachIndexed { index, objectTicTacToe ->
+            when (objectTicTacToe) {
+                'X' -> paintV2AfterRotate(index + 1, false)
+                'O' -> paintV2AfterRotate(index + 1, true)
+            }
+        }
     }
 
     private fun init() {
@@ -190,7 +214,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkBoard(position: Int): Boolean {
-        val board = ticTacToeConsole.checkBoard()
+        val board = ticTacToeConsole.getBoard()
         return board[position - 1] == 'X' || board[position - 1] == 'O'
     }
 
@@ -210,6 +234,23 @@ class MainActivity : AppCompatActivity() {
     private fun paintV2(position: Int) {
         val image =
             if (turn) resources.getDrawable(R.drawable.circle) else resources.getDrawable(R.drawable.cross)
+        when (position) {
+            1 -> oneImage.setImageDrawable(image)
+            2 -> twoImage.setImageDrawable(image)
+            3 -> threeImage.setImageDrawable(image)
+            4 -> fourImage.setImageDrawable(image)
+            5 -> fiveImage.setImageDrawable(image)
+            6 -> sixImage.setImageDrawable(image)
+            7 -> sevenImage.setImageDrawable(image)
+            8 -> eightImage.setImageDrawable(image)
+            9 -> nineImage.setImageDrawable(image)
+        }
+        turn = !turn
+    }
+
+    private fun paintV2AfterRotate(position: Int, turnOptional: Boolean) {
+        val image =
+            if (turnOptional) resources.getDrawable(R.drawable.circle) else resources.getDrawable(R.drawable.cross)
         when (position) {
             1 -> oneImage.setImageDrawable(image)
             2 -> twoImage.setImageDrawable(image)

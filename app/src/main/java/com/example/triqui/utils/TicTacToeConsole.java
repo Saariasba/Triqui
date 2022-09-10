@@ -17,10 +17,6 @@ public class TicTacToeConsole {
     char turn = HUMAN_PLAYER;    // Human starts first
     int win = 0;                // Set to 1, 2, or 3 when game is over
 
-    public TicTacToeConsole() {
-
-    }
-
     public int TicTacToeConsoleV2(int position) {
         win = checkForWinner();
         position--;
@@ -28,36 +24,41 @@ public class TicTacToeConsole {
         mBoard[position] = HUMAN_PLAYER;
         turn = COMPUTER_PLAYER;
         win = checkForWinner();
-        if(reportWinner()>9){
+        if (reportWinner() > 9) {
             win = checkForWinner();
             return reportWinner();
-        }else{
+        } else {
             int move = getComputerMove();
             turn = HUMAN_PLAYER;
             win = checkForWinner();
             displayBoard();
             reportWinner();
-            return move+1;
+            return move + 1;
         }
     }
 
-    public char[] checkBoard() {
+    public char[] getBoard() {
         return mBoard;
+    }
+
+    public void setBoard(char[] ticTacToe) {
+        mBoard = ticTacToe;
+        displayBoard();
     }
 
     public int reportWinner() {
         // Report the winner
         System.out.println();
-        if (win == 1){
+        if (win == 1) {
             System.out.println("It's a tie.");
             return 10;
-        }else if (win == 2){
+        } else if (win == 2) {
             System.out.println(HUMAN_PLAYER + " wins!");
             return 11;
-        }else if (win == 3){
+        } else if (win == 3) {
             System.out.println(COMPUTER_PLAYER + " wins!");
             return 12;
-        }else{
+        } else {
             return 0;
         }
     }
@@ -69,7 +70,7 @@ public class TicTacToeConsole {
     }
 
 
-    private void displayBoard() {
+    void displayBoard() {
         System.out.println();
         System.out.println(mBoard[0] + " | " + mBoard[1] + " | " + mBoard[2]);
         System.out.println("-----------");
