@@ -2,6 +2,7 @@ package com.example.triqui
 
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Button
@@ -12,6 +13,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.flatdialoglibrary.dialog.FlatDialog
 import com.example.triqui.utils.TicTacToeConsole
 import com.example.triqui.viewmodels.MainViewModel
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 
 
 class MainActivity : AppCompatActivity() {
@@ -57,11 +62,65 @@ class MainActivity : AppCompatActivity() {
     lateinit var mpClick: MediaPlayer
     lateinit var mpInitio: MediaPlayer
 
+    private var database = FirebaseFirestore.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         init()
         setListeners(animationScale)
+        writeBoardFirebase()
+        readBoardFirebase()
+        waitChanges()
+    }
+
+    private fun waitChanges(){
+        val docRef = database.collection("boards").document("board")
+        docRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w("DEBUG", "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            val source = if (snapshot != null && snapshot.metadata.hasPendingWrites())
+                "Local"
+            else
+                "Server"
+
+            if (snapshot != null && snapshot.exists()) {
+                Log.d("DEBUG", "$source data: ${snapshot.data}")
+            } else {
+                Log.d("DEBUG", "$source data: null")
+            }
+        }
+    }
+
+    private fun writeBoardFirebase(){
+        database.collection("boards").document("board").set(
+            hashMapOf("0" to ticTacToeConsole.board[0].toString(),
+            "1" to ticTacToeConsole.board[1].toString(),
+            "2" to ticTacToeConsole.board[2].toString(),
+            "3" to ticTacToeConsole.board[3].toString(),
+            "4" to ticTacToeConsole.board[4].toString(),
+            "5" to ticTacToeConsole.board[5].toString(),
+            "6" to ticTacToeConsole.board[6].toString(),
+            "7" to ticTacToeConsole.board[7].toString(),
+            "8" to ticTacToeConsole.board[8].toString()),
+        )
+    }
+
+    private fun readBoardFirebase(){
+        database.collection("boards").document("board").get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    Log.d("DEBUG", "DocumentSnapshot data: ${document.data}")
+                } else {
+                    Log.d("DEBUG", "No such document")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d("DEBUG", "get failed with ", exception)
+            }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

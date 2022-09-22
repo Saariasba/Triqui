@@ -36,6 +36,25 @@ public class TicTacToeConsole {
             return move + 1;
         }
     }
+    public int TicTacToeConsoleHuman(int position) {
+        win = checkForWinner();
+        position--;
+        displayBoard();
+        mBoard[position] = HUMAN_PLAYER;
+        turn = COMPUTER_PLAYER;
+        win = checkForWinner();
+        if (reportWinner() > 9) {
+            win = checkForWinner();
+            return reportWinner();
+        } else {
+            int move = getComputerMove();
+            turn = HUMAN_PLAYER;
+            win = checkForWinner();
+            displayBoard();
+            reportWinner();
+            return move + 1;
+        }
+    }
 
     public char[] getBoard() {
         return mBoard;

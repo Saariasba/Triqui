@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "828739265512",
+    "project_id": "triqui-39dc0",
+    "storage_bucket": "triqui-39dc0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:828739265512:android:77aa803cf7a1bbea97fa5d",
+        "android_client_info": {
+          "package_name": "com.example.triqui"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "828739265512-ggbeu087oaff53t94k7pq1ba2ff9cd1n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHUgPyC9x-ydgqv7rakHIPbCR8TTZW9q4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "828739265512-ggbeu087oaff53t94k7pq1ba2ff9cd1n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
