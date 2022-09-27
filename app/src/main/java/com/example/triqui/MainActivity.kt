@@ -13,10 +13,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.flatdialoglibrary.dialog.FlatDialog
 import com.example.triqui.utils.TicTacToeConsole
 import com.example.triqui.viewmodels.MainViewModel
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.SetOptions
 
 
 class MainActivity : AppCompatActivity() {
@@ -59,6 +57,8 @@ class MainActivity : AppCompatActivity() {
 
     var difficultyState: String? = null
 
+    var probablyWinner = 'X'
+
     lateinit var mpClick: MediaPlayer
     lateinit var mpInitio: MediaPlayer
 
@@ -69,12 +69,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         init()
         setListeners(animationScale)
-        writeBoardFirebase()
-        readBoardFirebase()
         waitChanges()
     }
 
-    private fun waitChanges(){
+    private fun waitChanges() {
         val docRef = database.collection("boards").document("board")
         docRef.addSnapshotListener { snapshot, e ->
             if (e != null) {
@@ -88,39 +86,33 @@ class MainActivity : AppCompatActivity() {
                 "Server"
 
             if (snapshot != null && snapshot.exists()) {
+                ticTacToeConsole.board[0] = snapshot.data?.get("0").toString().first()
+                ticTacToeConsole.board[1] = snapshot.data?.get("1").toString().first()
+                ticTacToeConsole.board[2] = snapshot.data?.get("2").toString().first()
+                ticTacToeConsole.board[3] = snapshot.data?.get("3").toString().first()
+                ticTacToeConsole.board[4] = snapshot.data?.get("4").toString().first()
+                ticTacToeConsole.board[5] = snapshot.data?.get("5").toString().first()
+                ticTacToeConsole.board[6] = snapshot.data?.get("6").toString().first()
+                ticTacToeConsole.board[7] = snapshot.data?.get("7").toString().first()
+                ticTacToeConsole.board[8] = snapshot.data?.get("8").toString().first()
+                ticTacToeConsole.actualTurn = snapshot.data?.get("turn").toString().first()
+                probablyWinner = snapshot.data?.get("turn").toString().first()
                 Log.d("DEBUG", "$source data: ${snapshot.data}")
+                loadState(ticTacToeConsole.board)
+                checkFinish()
             } else {
                 Log.d("DEBUG", "$source data: null")
             }
         }
     }
 
-    private fun writeBoardFirebase(){
+    private fun writeBoardFirebase(position: Int, move: Char) {
         database.collection("boards").document("board").set(
-            hashMapOf("0" to ticTacToeConsole.board[0].toString(),
-            "1" to ticTacToeConsole.board[1].toString(),
-            "2" to ticTacToeConsole.board[2].toString(),
-            "3" to ticTacToeConsole.board[3].toString(),
-            "4" to ticTacToeConsole.board[4].toString(),
-            "5" to ticTacToeConsole.board[5].toString(),
-            "6" to ticTacToeConsole.board[6].toString(),
-            "7" to ticTacToeConsole.board[7].toString(),
-            "8" to ticTacToeConsole.board[8].toString()),
+            hashMapOf(
+                (position - 1).toString() to move.toString(),
+                "turn" to ticTacToeConsole.actualTurn.toString()
+            ), SetOptions.merge()
         )
-    }
-
-    private fun readBoardFirebase(){
-        database.collection("boards").document("board").get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    Log.d("DEBUG", "DocumentSnapshot data: ${document.data}")
-                } else {
-                    Log.d("DEBUG", "No such document")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.d("DEBUG", "get failed with ", exception)
-            }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -139,8 +131,9 @@ class MainActivity : AppCompatActivity() {
     private fun loadState(ticTacToe: CharArray?) {
         ticTacToe?.forEachIndexed { index, objectTicTacToe ->
             when (objectTicTacToe) {
-                'X' -> paintV2AfterRotate(index + 1, false)
-                'O' -> paintV2AfterRotate(index + 1, true)
+                'X' -> paintV2AfterRotate(index + 1, false, false)
+                'O' -> paintV2AfterRotate(index + 1, true, false)
+                else -> paintV2AfterRotate(index + 1, false, true)
             }
         }
     }
@@ -155,48 +148,66 @@ class MainActivity : AppCompatActivity() {
     private fun setListeners(animationScale: Animation) {
         one.setOnClickListener {
             it.startAnimation(animationScale)
-            mpClick.start()
-            executeOperation(1)
+            if (checkFinish()) {
+                mpClick.start()
+                executeOperation(1)
+            }
         }
         two.setOnClickListener {
             it.startAnimation(animationScale)
-            mpClick.start()
-            executeOperation(2)
+            if (checkFinish()) {
+                mpClick.start()
+                executeOperation(2)
+            }
         }
         three.setOnClickListener {
             it.startAnimation(animationScale)
-            mpClick.start()
-            executeOperation(3)
+            if (checkFinish()) {
+                mpClick.start()
+                executeOperation(3)
+            }
         }
         four.setOnClickListener {
             it.startAnimation(animationScale)
-            mpClick.start()
-            executeOperation(4)
+            if (checkFinish()) {
+                mpClick.start()
+                executeOperation(4)
+            }
         }
         five.setOnClickListener {
             it.startAnimation(animationScale)
-            mpClick.start()
-            executeOperation(5)
+            if (checkFinish()) {
+                mpClick.start()
+                executeOperation(5)
+            }
         }
         six.setOnClickListener {
             it.startAnimation(animationScale)
-            mpClick.start()
-            executeOperation(6)
+            if (checkFinish()) {
+                mpClick.start()
+                executeOperation(6)
+            }
         }
         seven.setOnClickListener {
             it.startAnimation(animationScale)
-            mpClick.start()
-            executeOperation(7)
+            if (checkFinish()) {
+                mpClick.start()
+                executeOperation(7)
+            }
         }
         eight.setOnClickListener {
             it.startAnimation(animationScale)
-            mpClick.start()
-            executeOperation(8)
+            if (checkFinish()) {
+                mpClick.start()
+                executeOperation(8)
+            }
         }
         nine.setOnClickListener {
             it.startAnimation(animationScale)
-            mpClick.start()
-            executeOperation(9)
+            if (checkFinish()) {
+                mpClick.start()
+                executeOperation(9)
+            }
         }
         reset.setOnClickListener {
             it.startAnimation(animationScale)
@@ -251,9 +262,10 @@ class MainActivity : AppCompatActivity() {
             checkFinish()
         } else {
             if (!checkBoard(position)) {
-                paintV2(position)
-                val move = ticTacToeConsole.TicTacToeConsoleV2(position)
-                paintV2(move)
+                //paintV2(position)
+                val move = ticTacToeConsole.TicTacToeConsoleHuman(position)
+                writeBoardFirebase(position, move)
+                //paintV2(position+1)
                 checkFinish()
             } else {
                 Toast.makeText(this, "Illegal Move", Toast.LENGTH_SHORT).show()
@@ -261,14 +273,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkFinish() {
+    private fun checkFinish(): Boolean {
         when (ticTacToeConsole.reportWinner()) {
             10 -> result = "It's a tie."
-            11 -> result = "Humans Player Wins!!!!"
-            12 -> result = "Computer Player Wins!!!!"
+            11 -> result = "$probablyWinner Player Wins!!!!"
+            12 -> result = "$probablyWinner Player Wins!!!!"
         }
         if (!result.isNullOrEmpty()) {
             Toast.makeText(this, result.toString(), Toast.LENGTH_SHORT).show()
+            return false
+        } else {
+            return true
         }
     }
 
@@ -287,7 +302,25 @@ class MainActivity : AppCompatActivity() {
         sevenImage.setImageDrawable(null)
         eightImage.setImageDrawable(null)
         nineImage.setImageDrawable(null)
+        clearBoardFirebase()
         result = null
+    }
+
+    private fun clearBoardFirebase() {
+        database.collection("boards").document("board").set(
+            hashMapOf(
+                "1" to ticTacToeConsole.board[0].toString(),
+                "2" to ticTacToeConsole.board[1].toString(),
+                "3" to ticTacToeConsole.board[2].toString(),
+                "4" to ticTacToeConsole.board[3].toString(),
+                "5" to ticTacToeConsole.board[4].toString(),
+                "6" to ticTacToeConsole.board[5].toString(),
+                "7" to ticTacToeConsole.board[6].toString(),
+                "8" to ticTacToeConsole.board[7].toString(),
+                "9" to ticTacToeConsole.board[8].toString(),
+                "turn" to "X"
+            )
+        )
     }
 
     private fun paintV2(position: Int) {
@@ -307,19 +340,35 @@ class MainActivity : AppCompatActivity() {
         turn = !turn
     }
 
-    private fun paintV2AfterRotate(position: Int, turnOptional: Boolean) {
-        val image =
-            if (turnOptional) resources.getDrawable(R.drawable.circle) else resources.getDrawable(R.drawable.cross)
-        when (position) {
-            1 -> oneImage.setImageDrawable(image)
-            2 -> twoImage.setImageDrawable(image)
-            3 -> threeImage.setImageDrawable(image)
-            4 -> fourImage.setImageDrawable(image)
-            5 -> fiveImage.setImageDrawable(image)
-            6 -> sixImage.setImageDrawable(image)
-            7 -> sevenImage.setImageDrawable(image)
-            8 -> eightImage.setImageDrawable(image)
-            9 -> nineImage.setImageDrawable(image)
+    private fun paintV2AfterRotate(position: Int, turnOptional: Boolean, clear: Boolean) {
+        if (clear) {
+            when (position) {
+                1 -> oneImage.setImageDrawable(null)
+                2 -> twoImage.setImageDrawable(null)
+                3 -> threeImage.setImageDrawable(null)
+                4 -> fourImage.setImageDrawable(null)
+                5 -> fiveImage.setImageDrawable(null)
+                6 -> sixImage.setImageDrawable(null)
+                7 -> sevenImage.setImageDrawable(null)
+                8 -> eightImage.setImageDrawable(null)
+                9 -> nineImage.setImageDrawable(null)
+            }
+        } else {
+            val image =
+                if (turnOptional) resources.getDrawable(R.drawable.circle) else resources.getDrawable(
+                    R.drawable.cross
+                )
+            when (position) {
+                1 -> oneImage.setImageDrawable(image)
+                2 -> twoImage.setImageDrawable(image)
+                3 -> threeImage.setImageDrawable(image)
+                4 -> fourImage.setImageDrawable(image)
+                5 -> fiveImage.setImageDrawable(image)
+                6 -> sixImage.setImageDrawable(image)
+                7 -> sevenImage.setImageDrawable(image)
+                8 -> eightImage.setImageDrawable(image)
+                9 -> nineImage.setImageDrawable(image)
+            }
         }
         turn = !turn
     }

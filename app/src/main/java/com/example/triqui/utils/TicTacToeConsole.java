@@ -14,7 +14,8 @@ public class TicTacToeConsole {
 
     private Random mRand = new Random();
 
-    char turn = HUMAN_PLAYER;    // Human starts first
+    char turn = HUMAN_PLAYER;
+    char actualTurn = HUMAN_PLAYER;// Human starts first
     int win = 0;                // Set to 1, 2, or 3 when game is over
 
     public int TicTacToeConsoleV2(int position) {
@@ -36,24 +37,33 @@ public class TicTacToeConsole {
             return move + 1;
         }
     }
-    public int TicTacToeConsoleHuman(int position) {
+
+    public char getActualTurn() {
+        return actualTurn;
+    }
+
+    public void setActualTurn(char actualTurn) {
+        if(actualTurn == HUMAN_PLAYER){
+            this.actualTurn = COMPUTER_PLAYER;
+        }else{
+            this.actualTurn = HUMAN_PLAYER;
+        }
+    }
+
+    public char TicTacToeConsoleHuman(int position) {
+        //actualTurn = turn;
         win = checkForWinner();
         position--;
         displayBoard();
-        mBoard[position] = HUMAN_PLAYER;
-        turn = COMPUTER_PLAYER;
+        mBoard[position] = actualTurn;
         win = checkForWinner();
-        if (reportWinner() > 9) {
-            win = checkForWinner();
-            return reportWinner();
-        } else {
-            int move = getComputerMove();
+        displayBoard();
+        if(turn == HUMAN_PLAYER){
+            turn = COMPUTER_PLAYER;
+        }else{
             turn = HUMAN_PLAYER;
-            win = checkForWinner();
-            displayBoard();
-            reportWinner();
-            return move + 1;
         }
+        return actualTurn;
     }
 
     public char[] getBoard() {
@@ -66,6 +76,7 @@ public class TicTacToeConsole {
     }
 
     public int reportWinner() {
+        win = checkForWinner();
         // Report the winner
         System.out.println();
         if (win == 1) {
